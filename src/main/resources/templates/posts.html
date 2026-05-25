@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Posts</title>
+</head>
+<body>
+<h1>자유게시판</h1>
+
+<div th:each="article : ${articles}">
+    <h2 th:text="${article.title}">제목</h2>
+
+    <p>
+        작성자: 이재훈 |
+        <span th:text="${article.createdAt}">2026-05-25</span>
+    </p>
+
+    <p th:text="${article.content}">내용입니다.</p>
+    <hr>
+</div>
+
+</body>
+</html>
