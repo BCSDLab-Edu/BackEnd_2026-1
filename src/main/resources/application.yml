@@ -1,0 +1,6 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/bcsd_backend?serverTimezone=Asia/Seoul
+    username: root
+    password: Sp0^2:1!]<7
+    driver-class-name: com.mysql.cj.jdbc.Driver
