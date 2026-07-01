@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/bcsd?serverTimezone=Asia/Seoul
+    username: root
+    password: wldnd3513
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+jwt:
+  secret: dnjswldnd-3513-bcsd-test-jwt-1234
+  expiration: 86400000
