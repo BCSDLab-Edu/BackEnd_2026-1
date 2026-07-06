@@ -1,28 +1,31 @@
 package com.example.demo.controller;
 
+import com.example.demo.constant.SessionConst;
 import com.example.demo.domain.Article;
 import com.example.demo.domain.Board;
 import com.example.demo.domain.Member;
 import com.example.demo.dto.ArticleCreateRequest;
 import com.example.demo.dto.ArticleUpdateRequest;
 import com.example.demo.dto.BoardRequest;
+import com.example.demo.dto.LoginRequest;
 import com.example.demo.dto.MemberRequest;
 import com.example.demo.service.ArticleService;
 import com.example.demo.service.BoardService;
 import com.example.demo.service.MemberService;
 import com.example.demo.service.PostService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @Controller
 @RequestMapping
-public class    CrudController {
+public class CrudController {
 
     private final MemberService memberService;
     private final BoardService boardService;
@@ -69,6 +72,28 @@ public class    CrudController {
     @ResponseBody
     public ResponseEntity<Void> deleteMember(@PathVariable Long id) {
         memberService.deleteMember(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/login")
+    @ResponseBody
+    public ResponseEntity<Member> login(@Valid @RequestBody LoginRequest request,
+                                        HttpServletRequest servletRequest) {
+        Member member = memberService.login(request);
+        HttpSession session = servletRequest.getSession();
+        session.setAttribute(SessionConst.LOGIN_MEMBER_ID, member.getId());
+
+        return ResponseEntity.ok(member);
+    }
+
+    @PostMapping("/logout")
+    @ResponseBody
+    public ResponseEntity<Void> logout(HttpServletRequest servletRequest) {
+        HttpSession session = servletRequest.getSession(false);
+
+        if (session != null) {
+            session.invalidate();
+        }
         return ResponseEntity.noContent().build();
     }
 

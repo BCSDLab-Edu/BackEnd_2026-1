@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.repository.ArticleRepository;
 import com.example.demo.repository.MemberRepository;
 import com.example.demo.domain.Member;
+import com.example.demo.dto.LoginRequest;
 import com.example.demo.dto.MemberRequest;
 import com.example.demo.exception.ApiException;
 import org.springframework.http.HttpStatus;
@@ -32,6 +33,19 @@ public class MemberService {
 
         Member member = new Member(request.getName(), request.getEmail(), request.getPassword());
         return memberRepository.save(member);
+    }
+
+    public Member login(LoginRequest request) {
+        Member member = memberRepository.findByEmail(request.getEmail());
+        if (member == null) {
+            throw new ApiException(HttpStatus.UNAUTHORIZED);
+        }
+
+        if (!member.getPassword().equals(request.getPassword())) {
+            throw new ApiException(HttpStatus.UNAUTHORIZED);
+        }
+
+        return member;
     }
 
     public Member getMember(Long id) {

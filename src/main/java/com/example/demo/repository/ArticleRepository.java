@@ -12,5 +12,4 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     boolean existsByMemberId(Long memberId);
 
     boolean existsByBoardId(Long boardId);
-
 }

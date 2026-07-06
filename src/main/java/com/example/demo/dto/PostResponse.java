@@ -45,4 +45,3 @@ public class PostResponse {
         return createdTime;
     }
 }
-
