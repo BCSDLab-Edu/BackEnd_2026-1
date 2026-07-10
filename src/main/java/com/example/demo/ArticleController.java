@@ -1,0 +1,99 @@
+package com.example.demo;
+
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
+@Controller
+@RequestMapping
+public class ArticleController {
+
+    private final ArticleService articleService;
+    private final MemberRepository memberRepository;
+    private final BoardRepository boardRepository;
+
+    public ArticleController(ArticleService articleService, MemberRepository memberRepository, BoardRepository boardRepository) {
+        this.articleService = articleService;
+        this.memberRepository = memberRepository;
+        this.boardRepository = boardRepository;
+    }
+
+    @GetMapping("/posts")
+    public String getPostsPage(Model model) {
+        List<ArticleResponse> articles = articleService.getAllArticles();
+        model.addAttribute("articles", articles);
+        model.addAttribute("boardName", "자유게시판");
+        return "posts";
+    }
+
+    @PostMapping("/articles")
+    @ResponseBody
+    public ResponseEntity<String> createPostFromPostman(@Valid @RequestBody Article input) {
+        Long boardId = input.getBoard() != null ? input.getBoard().getId() : null;
+
+        if (boardId == null || boardRepository.findById(boardId).isEmpty() ||
+                memberRepository.findById(input.getAuthorId()).isEmpty()) {
+            throw new Exception400("존재하지 않는 사용자 혹은 게시판을 참조하고 있습니다.");
+        }
+
+        if (input.getDate() == null || input.getDate().isEmpty()) {
+            String currentTime = ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS+00:00"));
+            input.setDate(currentTime);
+            input.setUpdateDate(currentTime);
+        }
+
+        articleService.createArticle(input);
+        return new ResponseEntity<>("게시글 등록 완료!", HttpStatus.CREATED);
+    }
+
+    @GetMapping("/articles")
+    @ResponseBody
+    public ResponseEntity<List<ArticleResponse>> getArticlesByBoardId(@RequestParam(required = false) Long boardId) {
+        if (boardId != null && boardRepository.findById(boardId).isEmpty()) {
+            throw new Exception404("해당 게시판을 찾을 수 없습니다.");
+        }
+
+        if (boardId != null) {
+            List<ArticleResponse> serviceArticles = articleService.getArticlesByBoardId(boardId);
+            return new ResponseEntity<>(serviceArticles, HttpStatus.OK);
+        }
+
+        List<ArticleResponse> allArticles = articleService.getAllArticles();
+        return new ResponseEntity<>(allArticles, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/articles/{id}")
+    @ResponseBody
+    public ResponseEntity<String> deletePost(@PathVariable Long id) {
+        if (articleService.getArticleById(id) == null) {
+            throw new Exception404("해당 게시물을 찾을 수 없습니다.");
+        }
+        articleService.deleteArticle(id);
+        return new ResponseEntity<>("게시글 삭제 완료!", HttpStatus.OK);
+    }
+    @GetMapping("/articles/{id}")
+    @ResponseBody
+    public ArticleResponse getArticleById(@PathVariable Long id) {
+        ArticleResponse article = articleService.getArticleById(id);
+        if (article == null) {
+            throw new Exception404("해당 게시물을 찾을 수 없습니다.");
+        }
+        return article;
+    }
+
+    @PutMapping("/articles/{id}")
+    @ResponseBody
+    public ArticleResponse updateArticle(@PathVariable Long id, @Valid @RequestBody Article input) {
+        if (articleService.getArticleById(id) == null) {
+            throw new Exception404("해당 게시물을 찾을 수 없습니다.");
+        }
+
+        return articleService.updateArticle(id, input);
+    }
+}
