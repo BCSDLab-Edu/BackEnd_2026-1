@@ -27,4 +27,13 @@ public class ArticleController {
         nextId++;
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+    @PutMapping("/{id}")
+    public ResponseEntity<Article> update(@PathVariable Long id, @RequestBody Article request) {
+        Article article = articles.get(id);
+        if (article == null) {
+            return ResponseEntity.notFound().build();
+        }
+        article.setDescription(request.getDescription());
+        return ResponseEntity.ok(article);
+    }
 }
