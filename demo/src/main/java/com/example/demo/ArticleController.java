@@ -36,4 +36,19 @@ public class ArticleController {
         article.setDescription(request.getDescription());
         return ResponseEntity.ok(article);
     }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        if (articles.remove(id) == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.noContent().build();
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<Article> get(@PathVariable Long id) {
+        Article article = articles.get(id);
+        if (article == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(article);
+    }
 }
