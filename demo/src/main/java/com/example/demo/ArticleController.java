@@ -21,5 +21,10 @@ public class ArticleController {
     private final Map<Long, Article> articles = new HashMap<>();
     private Long nextId = 1L;
 
-
+    @PostMapping
+    public ResponseEntity<Void> create(@RequestBody Article article) {
+        articles.put(nextId, article);
+        nextId++;
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
 }
