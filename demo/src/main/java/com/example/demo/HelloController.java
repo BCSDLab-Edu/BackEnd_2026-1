@@ -17,4 +17,10 @@ public class HelloController {
     public String hello2() {
         return "hello";
     }
+
+    @GetMapping("/introduce")
+    public String introduce() {
+        return "introduce.html";
+    }
+
 }
