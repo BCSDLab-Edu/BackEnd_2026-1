@@ -14,6 +14,15 @@ public class ArticleController {
     private Map<Long, ArticleDto> db = new ConcurrentHashMap<>();
     private Long idSequence = 1L;
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ArticleDto> getArticle(@PathVariable Long id) {
+        ArticleDto article = db.get(id);
+        if (article == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        return ResponseEntity.ok(article);
+    }
+    
     @PostMapping
     public ResponseEntity<Long> createArticle(@RequestBody ArticleDto articleDto) {
         Long id = idSequence++;
