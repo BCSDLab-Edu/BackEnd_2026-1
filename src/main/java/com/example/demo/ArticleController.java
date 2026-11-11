@@ -22,11 +22,20 @@ public class ArticleController {
         }
         return ResponseEntity.ok(article);
     }
-    
+
     @PostMapping
     public ResponseEntity<Long> createArticle(@RequestBody ArticleDto articleDto) {
         Long id = idSequence++;
         db.put(id, articleDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(id);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateArticle(@RequestBody ArticleDto articleDto, @PathVariable Long id) {
+        if (!db.containsKey(id)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Article not found");
+        }
+        db.put(id, articleDto);
+        return ResponseEntity.ok("Successfully updated");
     }
 }
