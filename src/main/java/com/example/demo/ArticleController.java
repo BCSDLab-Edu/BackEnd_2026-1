@@ -38,4 +38,12 @@ public class ArticleController {
         db.put(id, articleDto);
         return ResponseEntity.ok("Successfully updated");
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteArticle(@PathVariable Long id) {
+        if (db.remove(id)==null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Article not found");
+        }
+        return ResponseEntity.ok("Successfully deleted");
+    }
 }
